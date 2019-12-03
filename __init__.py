@@ -1,9 +1,8 @@
 # main file
 # Interface code
-import gui
 
-# Raspberry Pi Interface 
-# import RPi_interface 
+
+import gui
 
 
 # Set focus to freqGen1 to start

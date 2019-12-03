@@ -3,23 +3,52 @@
 # Frequency and amplitude data can be entered via
 # a touchscreen interface 
 
-from Tkinter import * 
+from tkinter import * 
 
-  # Definitions and code for ADF4531  
+# Definitions and code for ADF4531  
+
 import aDFClass
-
-# Raspberry Pi Interface 
-# import RPi_interface 
-
-# Create instances of ADF4531
-Gen1 = aDFClass.ADF4531("Gen1")
-Gen2 = aDFClass.ADF4531("Gen2")
-Gen3 = aDFClass.ADF4531("Gen3")
 
 # Main window 
 mainwindow = Tk()
 mainwindow.title("RF Signal Generator")
-mainwindow.geometry('600x400')
+mainwindow.geometry('650x300')
+
+# Create instances of the ADF4531 and assign ports 
+Gen1 = aDFClass.ADF4531("Gen1")
+
+# Set ports acording to wiring of RPi
+# Broadcom witring convention
+Gen1.chipEnable = 17 # Physical pin 11
+Gen1.loadEnable = 18  # Physical pin 12 
+Gen1.dataClock = 27  # Physical pin 13
+Gen1.serialData = 22 # Physical pin 15
+Gen1.lockDetect = 0 
+Gen1.multiplexData = 0  
+Gen1.setup_port()
+Gen1.initialize_registers()
+
+Gen2 = aDFClass.ADF4531("Gen2")
+
+Gen2.chipEnable = 0 
+Gen2.loadEnable = 0 
+Gen2.dataClock = 0 
+Gen2.serialData = 0 
+Gen2.lockDetect = 0 
+Gen2.multiplexData = 0  
+Gen2.setup_port()
+
+
+Gen3 = aDFClass.ADF4531("Gen3")
+
+Gen3.chipEnable = 0 
+Gen3.loadEnable = 0 
+Gen3.dataClock = 0 
+Gen3.serialData = 0 
+Gen3.lockDetect = 0 
+Gen3.multiplexData = 0  
+Gen3.setup_port()
+
 
 # Handlers - need to be declared before widget is defined
 def clickedMute1():
@@ -27,20 +56,20 @@ def clickedMute1():
     if Gen1.mainPower == '11':
         Gen1.mainRFEnabled = '0'
         Gen1.mainPower ='00'
-        Gen1message ='MUTED'
+        Gen1message ='MUTED'  # signal at approx -80dBm
     elif  Gen1.mainRFEnabled == '0':
         Gen1.mainRFEnabled ='1'
         Gen1.mainPower ='00'
-        Gen1message = '   -4   '
+        Gen1message = '   -9   '
     elif  Gen1.mainPower =='00':
         Gen1.mainPower ='01'
-        Gen1message = '   -1   '
+        Gen1message = '   -6   '
     elif  Gen1.mainPower =='01':
         Gen1.mainPower ='10'
-        Gen1message = '   +2   '
+        Gen1message = '   -3   '
     elif  Gen1.mainPower =='10':
         Gen1.mainPower ='11'
-        Gen1message = '   +5   '
+        Gen1message = '   0   '
 
     Gen1.update()
     lbl = Label(mainwindow, text=Gen1message) 
@@ -51,20 +80,20 @@ def clickedMute2():
     if Gen2.mainPower == '11':
         Gen2.mainRFEnabled = '0'
         Gen2.mainPower ='00'
-        Gen2message ='MUTED'
+        Gen2message ='MUTED'  # signal at approx -80dBm
     elif  Gen2.mainRFEnabled == '0':
         Gen2.mainRFEnabled ='1'
         Gen2.mainPower ='00'
-        Gen2message = '   -4   '
+        Gen2message = '   -9   '
     elif  Gen2.mainPower =='00':
         Gen2.mainPower ='01'
-        Gen2message = '   -1   '
+        Gen2message = '   -6   '
     elif  Gen2.mainPower =='01':
         Gen2.mainPower ='10'
-        Gen2message = '   +2   '
+        Gen2message = '   -3   '
     elif  Gen2.mainPower =='10':
         Gen2.mainPower ='11'
-        Gen2message = '   +5   '
+        Gen2message = '   0   '
 
     Gen2.update()
     lbl = Label(mainwindow, text=Gen2message) 
@@ -72,6 +101,7 @@ def clickedMute2():
 
 def clickedMute3():
          # Cycle power setting between -4dBm, -1dBm, +2dBm, +5dBm and MUTE
+         # In practice at output levels are -9, -6, -3 and 0dBm 
     if Gen3.mainPower == '11':
         Gen3.mainRFEnabled = '0'
         Gen3.mainPower ='00'
@@ -79,16 +109,16 @@ def clickedMute3():
     elif  Gen3.mainRFEnabled == '0':
         Gen3.mainRFEnabled ='1'
         Gen3.mainPower ='00'
-        Gen3message = '   -4   '
+        Gen3message = '   -9   '
     elif  Gen3.mainPower =='00':
         Gen3.mainPower ='01'
-        Gen3message = '   -1   '
+        Gen3message = '   -6   '
     elif  Gen3.mainPower =='01':
         Gen3.mainPower ='10'
-        Gen3message = '   +2   '
+        Gen3message = '   -3   '
     elif  Gen3.mainPower =='10':
         Gen3.mainPower ='11'
-        Gen3message = '   +5   '
+        Gen3message = '   0   '
 
     Gen3.update()
     lbl = Label(mainwindow, text=Gen3message) 

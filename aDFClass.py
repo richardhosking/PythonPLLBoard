@@ -1,3 +1,6 @@
+import RPi.GPIO as io # using RPi.GPIO
+io.setmode(io.BCM)  # Broadcom pin assignment     
+
 class ADFReg:
     """ Creates a 32 bit number to write to ADF4531 Register containing various parameters
     
@@ -45,52 +48,55 @@ class ADF4531:
     """ Class containing variables and functions to drive the ADF4531 Fractional N PLL synthesizer chip 
         
     """ 
+    
        # Create instance with instance variables and default values  
     def __init__(self, PLL_name): 
         self.output_freq = 0 		# main output frquency KHz 
         self.reference_clock = 25000 	# Reference clock  in KHz 25 MHz in these modules 
-        self.integer = 0    			# integer part of PLL main divider 16 bits
-        self.phase = 0		            # Output phase can be shifted 12 bits - disabled for this application 
-        self.rf_divider = '000' 		# Output divider 1(000) to 64 (110)  		 
-        self.auxPower = '00'			# Output power 00 = -4dBm, 01 = -1dBm, 10 = +2dBm 11 = +5dBm  
+        self.integer = 0    		# integer part of PLL main divider 16 bits
+        self.phase = 0		        # Output phase can be shifted 12 bits - disabled for this application 
+        self.rf_divider = '000' 	# Output divider 1(000) to 64 (110)  		 
+        self.auxPower = '00'		# Output power 00 = -4dBm, 01 = -1dBm, 10 = +2dBm 11 = +5dBm  
         self.mainPower = '00' 
-        self.modulus = 1000			# Modulus of fractional N divider Int steps 1MHz hence this will give 1KHz steps  
-        self.fraction = 0			# fraction of fractional N divider 12 bits
-        self.reference_counter = 25		# divide main reference (25 MHz) to give phase detector frequency of 1MHz
+        self.modulus = 1000		# Modulus of fractional N divider Int steps 1MHz hence this will give 1KHz steps  
+        self.fraction = 0		# fraction of fractional N divider 12 bits
+        self.reference_counter = 25	# divide main reference (25 MHz) to give phase detector frequency of 1MHz
         self.powerdown = '0' 		# Power the chip down 1 
-        self.auxRFEnabled = '0' 		# Aux output off 0  
-        self.mainRFEnabled = '0' 		# Main RF out 0 = off  
-        self.feedbackType = '1' 		# feedback direct from VCO to N Divider (1) or via output divider (0) 
+        self.auxRFEnabled = '0' 	# Aux output off 0  
+        self.mainRFEnabled = '0' 	# Main RF out 0 = off  
+        self.feedbackType = '1' 	# feedback direct from VCO to N Divider (1) or via output divider (0) 
         self.prescaler = '0' 		# Output prescaler 4/5 if VCO >3.6GHz must be set to 8/9 1 
         self.ABP = '0' 			# antibacklash pulse width 6ns for Fractional N mode 
         self.ref_doubler = '0'		# Reference doubler to extend range of Phase detector active 1  
         self.ref_halve = '0' 		# reference halve active 1  
         
         # Port pin assignments 
-        self.chipEnable = 14; 
-        self.loadEnable = 5; 
-        self.dataClock = 3; 
-        self.serialData = 4; 
-        self.lockDetect = 15; 
-        self.multiplexData = 6;  
+ 
+        self.chipEnable = 0 
+        self.loadEnable = 0 
+        self.dataClock = 0 
+        self.serialData = 0 
+        self.lockDetect = 0 
+        self.multiplexData = 0 
         
+      
         # ADF4531 Registers with maps of variables  
         # many are "hard-wired" - see below and ADF4531 datasheet for details - address is 3 Least Significant Bits 
         
         
-        R0 = ADFReg('R0') 
+        self.R0 = ADFReg('R0') 
         
         R0data = [['reserved',1,'0'],  ['integer',16, format(self.integer, '016b')],  ['fraction', 12,  format(self.fraction, '012b')],  ['address', 3,  '000']]
-        R0.add_data(R0data)
+        self.R0.add_data(R0data)
         
         
         # R1 settings  
         # Phase_adj VCO band selection and phase resync with R0 updates (use for fixed freq or narrow band applications only)
         # Prescaler 4/5 or 8/9 
         # phase Output phase can be shifted - disabled for this application	12 bits           
-        R1 = ADFReg('R1') 
+        self.R1 = ADFReg('R1') 
         R1data = [['reserved',3,'000'], ['phase_adj', 1, '0' ],  ['prescaler',  1,  self.prescaler],  ['phase',12, format(self.phase,  '012b')],  ['modulus', 12, format(self.modulus,  '012b')],  ['address', 3,  '001']]
-        R1.add_data(R1data)
+        self.R1.add_data(R1data)
         
         
         # R2 Settings 
@@ -105,11 +111,11 @@ class ADF4531:
         # Charge Pump 3 state CP_3state 0 for normal operation
         # reset_counter if 1 R and N counters are held in reset - 0 for normal operation   
         
-        R2 = ADFReg('R2') 
-        R2data = [['reserved',1,'0'], ['noise_spur_mode',  2,  '00' ], ['mux_out',  3,  '000'], ['ref_doubler',  1,  self.ref_doubler] ,  ['ref_halve',  1,  self.ref_halve], 
-        ['reference_counter',10, format(self.reference_counter,  '010b')] , ['double_buffer',  1,  '0'],   ['charge_pump_current', 4,  '1000'], ['LDF',  1,  '0'],  ['LDP',  1,  '0'],  ['PD_polarity',  1,  '0'] ,   
+        self.R2 = ADFReg('R2') 
+        R2data = [['reserved',1,'0'], ['noise_spur_mode',  2,  '11' ], ['mux_out',  3,  '000'], ['ref_doubler',  1,  self.ref_doubler] ,  ['ref_halve',  1,  self.ref_halve], 
+        ['reference_counter',10, format(self.reference_counter,  '010b')] , ['double_buffer',  1,  '0'],   ['charge_pump_current', 4,  '1100'], ['LDF',  1,  '0'],  ['LDP',  1,  '0'],  ['PD_polarity',  1,  '1'] ,   
         ['power_down',  1,  '0'],  ['CP_3state',  1,  '0'],  ['reset_counter',  1,  '0'],  ['address', 3,  '010']]
-        R2.add_data(R2data)
+        self.R2.add_data(R2data)
         
         
         # R3 settings
@@ -120,10 +126,10 @@ class ADF4531:
         # Clock Divider Mode clk_div_mode 10 Phase Resync (works in C++ version) 01 fast lock 00 disable clock divider (see datasheet)
         # Clock Divider - timeout counter for Phase resync and fast lock ie NOT reference divider was 1000 in C++ design 
         
-        R3 = ADFReg('R3') 
+        self.R3 = ADFReg('R3') 
         R3data = [['reserved', 8, '00000000'], ['band_select_clock_mode',  1,  '0'],  ['ABP',  1,  self.ABP],  ['charge_cancel',  1,  '0'], ['reserved', 2, '00'], ['CSR',  1,  '0'],  ['reserved',  1,  '0'],  
-        ['clk_div_mode', 2,  '10'], ['clock_divider',  12,  '001000000000'],  ['address', 3,  '011']] 
-        R3.add_data(R3data)
+        ['clk_div_mode', 2,  '10'], ['clock_divider',  12,  '000001000010'],  ['address', 3,  '011']] 
+        self.R3.add_data(R3data)
         
         
         # R4 settings  
@@ -133,57 +139,87 @@ class ADF4531:
         # Mute till Lock Detect MTLD - mutes output until lock when set 1 
         # Aux_output_select if 0 is from RF dividers if 1 direct from VCO
         
-        R4 = ADFReg('R4') 
+        self.R4 = ADFReg('R4') 
         R4data = [['reserved',8,'00000000'],  ['feedbackType',1, self.feedbackType], ['rf_divider',3, self.rf_divider], ['band_select_clk_divider', 8,'00001000'], ['VCO_power_down',  1,  '0'],  
         ['MTLD',  1,  '0'],  ['aux_output_select',  1,  '0'],  ['aux_output_enable',  1,  self.auxRFEnabled],  ['aux_output_power',  2,  self.auxPower],  ['output_enable',  1,  self.mainRFEnabled],  
         ['output_power',  2,  self.mainPower],   
         ['address', 3,'100']]
-        R4.add_data(R4data) 
+        self.R4.add_data(R4data) 
         
         
         # R5 settings
         # Lock Detect pin mode LD_pin_mode 00 low 01 Digital Lock Detect 10 Low 11 High           
         
-        R5 = ADFReg('R5') 
+        self.R5 = ADFReg('R5') 
         R5data = [['reserved',8,'00000000'],  ['LD_pin_mode',2, '00'],  ['reserved', 19,  '0110000000000000000'],  ['address', 3,  '101']]
-        R5.add_data(R5data)
+        self.R5.add_data(R5data)
         
-      # Initialize registers      
-        self.write_to_register(R5)
-        print "R5 equals ", R5.register
-        self.write_to_register(R4)
-        print "R4 equals ", R4.register
-        self.write_to_register(R3)
-        print "R3 equals ", R3.register
-        self.write_to_register(R2)
-        print "R2 equals ", R2.register
-        self.write_to_register(R1)
-        print "R1 equals ", R1.register
-        self.write_to_register(R0)
-        print "R0 equals ", R0.register
+    def setup_port(self):
+        io.setup(self.chipEnable,io.OUT) # make pin into an output   
+        io.setup(self.loadEnable,io.OUT) 
+        io.setup(self.dataClock,io.OUT) 
+        io.setup(self.serialData,io.OUT)      
+        
+    def write_to_register(self, ADFReg): 
+        io.output(self.chipEnable,0)    
+        io.output(self.loadEnable,0) 
+        io.output(self.dataClock,0) 
+        io.output(self.serialData,0)  # Initialize all data lines  
+        
+        data = ADFReg.register; 
+     # Read data out of register MSBit first 
+        for i in data:
+            if i == '0':
+                io.output(self.serialData,0)
+            elif i == '1':
+                io.output(self.serialData,1)  
+            io.output(self.dataClock,1) 
+            io.output(self.dataClock,0)
+            
+        io.output(self.loadEnable,1)
+        io.output(self.loadEnable,0)         
+        
+        io.output(self.chipEnable,1) 
+                
+        
+      # Initialize registers 
+    def initialize_registers(self):       
+        self.write_to_register(self.R5)
+        print ("R5 equals ", self.R5.register)
+        self.write_to_register(self.R4)
+        print ('R4 equals ', self.R4.register)
+        self.write_to_register(self.R3)
+        print ("R3 equals ", self.R3.register)
+        self.write_to_register(self.R2)
+        print ("R2 equals ", self.R2.register)
+        self.write_to_register(self.R1)
+        print ("R1 equals ", self.R1.register)
+        self.write_to_register(self.R0)
+        print ("R0 equals ", self.R0.register)
        
      # Update relevant registers after change      
     def update(self): 
-        R4 = ADFReg('R4_update') 
+        self.R4 = ADFReg('R4_update') 
         R4data = [['reserved',8,'00000000'],  ['feedbackType',1, self.feedbackType], ['rf_divider',3, self.rf_divider], ['band_select_clk_divider', 8,'00001000'], ['VCO_power_down',  1,  '0'],  
         ['MTLD',  1,  '0'],  ['aux_output_select',  1,  '0'],  ['aux_output_enable',  1,  self.auxRFEnabled],  ['aux_output_power',  2,  self.auxPower],  ['output_enable',  1,  self.mainRFEnabled],  
         ['output_power',  2,  self.mainPower],   
         ['address', 3,'100']]
-        R4.add_data(R4data) 
-        self.write_to_register(R4)
-        #print "R4 equals ", R4.register
+        self.R4.add_data(R4data) 
+        self.write_to_register(self.R4)
+        print ("R4 equals ", self.R4.register)
         
-        R1 = ADFReg('R1_update') 
+        self.R1 = ADFReg('R1_update') 
         R1data = [['reserved',3,'000'], ['phase_adj', 1, '0' ],  ['prescaler',  1,  self.prescaler],  ['phase',12, format(self.phase,  '012b')],  ['modulus', 12, format(self.modulus,  '012b')],  ['address', 3,  '001']]
-        R1.add_data(R1data)
-        self.write_to_register(R1)
-        #print "R1 equals ", R1.register
+        self.R1.add_data(R1data)
+        self.write_to_register(self.R1)
+        print ("R1 equals ", self.R1.register)
         
-        R0 = ADFReg('R0_update') 
+        self.R0 = ADFReg('R0_update') 
         R0data = [['reserved',1,'0'],  ['integer',16, format(self.integer, '016b')],  ['fraction', 12,  format(self.fraction, '012b')],  ['address', 3,  '000']]
-        R0.add_data(R0data)
-        self.write_to_register(R0)
-        #print "R0 equals ", R0.register
+        self.R0.add_data(R0data)
+        self.write_to_register(self.R0)
+        self.write_to_register(self.R0)        
+        print ("R0 equals ", self.R0.register)
         
     
     def calculate_freq(self, freq):
@@ -193,7 +229,7 @@ class ADF4531:
             
             # Setup output divider
         if freq > 4400000:
-            print "Error frequency Greater than max"            
+            print ("Error frequency Greater than max")            
         elif freq >= 2200000:     
             output_divider = 1
             self.rf_divider = '000' 	# output_divider = 1
@@ -216,47 +252,35 @@ class ADF4531:
             self.rf_divider = '110'
             output_divider = 64
         else:
-            print "Error frequency below minimum"
+            print ("Error frequency below minimum")
         
         # Final freq = 1000*(INT + frac/mod)/(output division) KHz 
         # quotient = dividend / divisor 
         # remainder = dividend % divisor
         
         VCO = freq *output_divider 
-        self.integer = VCO/1000     # quotient integer part of Fractional N divider 
-        self.fraction = VCO%1000		# remainder fractional part  
+        self.integer = int(VCO/1000)     # quotient integer part of Fractional N divider 
+        self.fraction = int(VCO%1000+31) # remainder fractional part 
+                                         # add trim to allow for reference clock error
+        # But if fraction > 1000 need to subtract 1000 and add 1 to integer   
+        if self.fraction > 999:
+            self.fraction = self.fraction-1000
+            self.integer = self.integer+1                                 
         
         # If VCO has to go above 3.6GHz prescaler should be set to 8/9 
         if(VCO > 3600000): 
             self.prescaler = '1'  
         
-        print "Output freq is ", freq,  " KHz"
-        print "VCO freq is ",  VCO
-        print "Integer is ",  self.integer
-        print "Fraction is ",  self.fraction
-        print "Modulus is ",  self.modulus
-        print "RF Divider is ",  output_divider
+        print ("Output freq is ", freq,  " KHz")
+        print ("VCO freq is ",  VCO)
+        print ("Integer is ",  self.integer)
+        print ("Fraction is ",  self.fraction)
+        print ("Modulus is ",  self.modulus)
+        print ("RF Divider is ",  output_divider)
     
-          
-    def write_to_register(self, register): 
-        #digitalWrite(loadEnable, LOW); 
-        #digitalWrite(DataClock, LOW); 
-        #digitalWrite(SerialData, LOW);  // Initialize all data lines  
-        #bool bitdata = 0; 
-        #uint32_t data = registerData; 
-     
-        #for (int i = 31; i >= 0; i--) { 
-        #bitdata = bitRead(data, i); // Get each bit of register data, starting with MSB 
-     
-        #digitalWrite(SerialData, bitdata);  // and write to ADF4351 
-        #digitalWrite(DataClock, HIGH); 
-        #digitalWrite(DataClock, LOW); 
-    
-      
-        #digitalWrite(LoadEnable, HIGH); 
-        #digitalWrite(LoadEnable, LOW); 
-        pass 
-         
+
+        
+               
     def get_variable(variable): 
         return self.variable 
          
