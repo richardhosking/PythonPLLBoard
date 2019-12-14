@@ -1,7 +1,7 @@
-Git workflow 
+# Git workflow 
 
 # New repo 
-Git init 
+git init 
 
 # or clone remote repo into current directory
 git clone  https://github.com/richardhosking/PythonPLLBoard
@@ -16,6 +16,7 @@ git branch branchname
 git checkout branchname
 
 # make edits
+
 # add edits to staging area 
 git add -A
 
@@ -35,5 +36,25 @@ git checkout master
 git merge branchname
 
 # Push up to remote repo 
- 
-  
+git push origin master
+
+# Github will ask for username and password 
+
+#Starting script at bootup
+(1) Various issues with naming Tkinter vs tkinter
+ settled on Tkinter
+
+(2) Make script executable 
+Shebang at start 
+#!/usr/bin/python
+
+Change permissions for your script to executable 
+sudo chmod 755 <scriptname.py>
+
+(3) Add line to Pi autostart file at 
+ /home/pi/.config/lxsession/LXDE-pi/autostart
+add the following line of text to the bottom
+(modify the path as needed to where yourscript.py is located)
+
+@/usr/bin/python /home/pi/<path_to_yourscript>/<yourscript.py>
+
