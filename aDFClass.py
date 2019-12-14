@@ -1,5 +1,5 @@
-import RPi.GPIO as io # using RPi.GPIO
-io.setmode(io.BCM)  # Broadcom pin assignment     
+#import RPi.GPIO as io # using RPi.GPIO
+#io.setmode(io.BCM)  # Broadcom pin assignment     
 
 class ADFReg:
     """ Creates a 32 bit number to write to ADF4531 Register containing various parameters
