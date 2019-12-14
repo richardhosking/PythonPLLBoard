@@ -151,7 +151,7 @@ class ADF4531:
         # Lock Detect pin mode LD_pin_mode 00 low 01 Digital Lock Detect 10 Low 11 High           
         
         self.R5 = ADFReg('R5') 
-        R5data = [['reserved',8,'00000000'],  ['LD_pin_mode',2, '00'],  ['reserved', 19,  '0110000000000000000'],  ['address', 3,  '101']]
+        R5data = [['reserved',8,'00000000'],  ['LD_pin_mode',2, '01'],  ['reserved', 19,  '0110000000000000000'],  ['address', 3,  '101']]
         self.R5.add_data(R5data)
         
     def setup_port(self):
@@ -185,17 +185,17 @@ class ADF4531:
       # Initialize registers 
     def initialize_registers(self):       
         self.write_to_register(self.R5)
-        print ("R5 equals ", self.R5.register)
+        #print ("R5 equals ", self.R5.register)
         self.write_to_register(self.R4)
-        print ('R4 equals ', self.R4.register)
+        #print ('R4 equals ', self.R4.register)
         self.write_to_register(self.R3)
-        print ("R3 equals ", self.R3.register)
+        #rint ("R3 equals ", self.R3.register)
         self.write_to_register(self.R2)
-        print ("R2 equals ", self.R2.register)
+        #print ("R2 equals ", self.R2.register)
         self.write_to_register(self.R1)
-        print ("R1 equals ", self.R1.register)
+        #print ("R1 equals ", self.R1.register)
         self.write_to_register(self.R0)
-        print ("R0 equals ", self.R0.register)
+        #print ("R0 equals ", self.R0.register)
        
      # Update relevant registers after change      
     def update(self): 
@@ -206,20 +206,20 @@ class ADF4531:
         ['address', 3,'100']]
         self.R4.add_data(R4data) 
         self.write_to_register(self.R4)
-        print ("R4 equals ", self.R4.register)
+        #print ("R4 equals ", self.R4.register)
         
         self.R1 = ADFReg('R1_update') 
         R1data = [['reserved',3,'000'], ['phase_adj', 1, '0' ],  ['prescaler',  1,  self.prescaler],  ['phase',12, format(self.phase,  '012b')],  ['modulus', 12, format(self.modulus,  '012b')],  ['address', 3,  '001']]
         self.R1.add_data(R1data)
         self.write_to_register(self.R1)
-        print ("R1 equals ", self.R1.register)
+        #print ("R1 equals ", self.R1.register)
         
         self.R0 = ADFReg('R0_update') 
         R0data = [['reserved',1,'0'],  ['integer',16, format(self.integer, '016b')],  ['fraction', 12,  format(self.fraction, '012b')],  ['address', 3,  '000']]
         self.R0.add_data(R0data)
         self.write_to_register(self.R0)
         self.write_to_register(self.R0)        
-        print ("R0 equals ", self.R0.register)
+        #print ("R0 equals ", self.R0.register)
         
     
     def calculate_freq(self, freq):

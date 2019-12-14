@@ -3,7 +3,7 @@
 # Frequency and amplitude data can be entered via
 # a touchscreen interface 
 
-from tkinter import * 
+from Tkinter import * 
 
 # Definitions and code for ADF4531  
 
@@ -12,7 +12,13 @@ import aDFClass
 # Main window 
 mainwindow = Tk()
 mainwindow.title("RF Signal Generator")
-mainwindow.geometry('650x300')
+mainwindow.geometry('800x450')
+# fonts for all widgets
+mainwindow.option_add("*Font", "helvetica 12 bold")
+
+# make all widgets light blue
+mainwindow.option_add("*Background", "light blue")
+
 
 # Create instances of the ADF4531 and assign ports 
 Gen1 = aDFClass.ADF4531("Gen1")
@@ -60,16 +66,16 @@ def clickedMute1():
     elif  Gen1.mainRFEnabled == '0':
         Gen1.mainRFEnabled ='1'
         Gen1.mainPower ='00'
-        Gen1message = '   -9   '
+        Gen1message = '    -9    '
     elif  Gen1.mainPower =='00':
         Gen1.mainPower ='01'
-        Gen1message = '   -6   '
+        Gen1message = '   -6     '
     elif  Gen1.mainPower =='01':
         Gen1.mainPower ='10'
-        Gen1message = '   -3   '
+        Gen1message = '   -3     '
     elif  Gen1.mainPower =='10':
         Gen1.mainPower ='11'
-        Gen1message = '   0   '
+        Gen1message = '    0     '
 
     Gen1.update()
     lbl = Label(mainwindow, text=Gen1message) 
@@ -84,19 +90,19 @@ def clickedMute2():
     elif  Gen2.mainRFEnabled == '0':
         Gen2.mainRFEnabled ='1'
         Gen2.mainPower ='00'
-        Gen2message = '   -9   '
+        Gen2message = '   -9     '
     elif  Gen2.mainPower =='00':
         Gen2.mainPower ='01'
-        Gen2message = '   -6   '
+        Gen2message = '   -6     '
     elif  Gen2.mainPower =='01':
         Gen2.mainPower ='10'
-        Gen2message = '   -3   '
+        Gen2message = '   -3     '
     elif  Gen2.mainPower =='10':
         Gen2.mainPower ='11'
-        Gen2message = '   0   '
+        Gen2message = '   0      '
 
     Gen2.update()
-    lbl = Label(mainwindow, text=Gen2message) 
+    lbl = Label(LHButtons, text=Gen2message) 
     lbl.grid(column=4, row=3)
 
 def clickedMute3():
@@ -109,19 +115,19 @@ def clickedMute3():
     elif  Gen3.mainRFEnabled == '0':
         Gen3.mainRFEnabled ='1'
         Gen3.mainPower ='00'
-        Gen3message = '   -9   '
+        Gen3message = '   -9     '
     elif  Gen3.mainPower =='00':
         Gen3.mainPower ='01'
-        Gen3message = '   -6   '
+        Gen3message = '   -6    '
     elif  Gen3.mainPower =='01':
         Gen3.mainPower ='10'
-        Gen3message = '   -3   '
+        Gen3message = '   -3    '
     elif  Gen3.mainPower =='10':
         Gen3.mainPower ='11'
-        Gen3message = '   0   '
+        Gen3message = '   0      '
 
     Gen3.update()
-    lbl = Label(mainwindow, text=Gen3message) 
+    lbl = Label(LHButtons, text=Gen3message) 
     lbl.grid(column=6, row=3)
 
 def clickedUpdate():
@@ -136,9 +142,9 @@ def clickedUpdate():
         # if no data erase previous error message and return 
        error = '          '
        errorText = '          '
-       lbl1 = Label(mainwindow, textvariable=error)
+       lbl1 = Label(LHButtons, textvariable=error)
        lbl1.grid(column=0, row=10)
-       lbl2 = Label(mainwindow, textvariable=errorText)
+       lbl2 = Label(LHButtons, textvariable=errorText)
        lbl2.grid(column=2, row=10)
        return
     
@@ -147,9 +153,9 @@ def clickedUpdate():
        error.set('Error!')
        errorText.set('  Freq > max  ')
              # Error/Message labels
-       lbl1 = Label(mainwindow, textvariable=error)
+       lbl1 = Label(LHButtons, textvariable=error)
        lbl1.grid(column=0, row=10)
-       lbl2 = Label(mainwindow, textvariable=errorText)
+       lbl2 = Label(LHButtons, textvariable=errorText)
        lbl2.grid(column=2, row=10)
        
        # and clear data
@@ -160,9 +166,9 @@ def clickedUpdate():
        error.set('Error!')
        errorText.set('  Freq < min  ')
       # Error/Message labels       
-       lbl1 = Label(mainwindow, textvariable=error)
+       lbl1 = Label(LHButtons, textvariable=error)
        lbl1.grid(column=0, row=10)
-       lbl2 = Label(mainwindow, textvariable=errorText)
+       lbl2 = Label(LHButtons, textvariable=errorText)
        lbl2.grid(column=2, row=10)
        
        mainwindow.focus_get().delete(0, END)
@@ -172,9 +178,9 @@ def clickedUpdate():
        error.set('          ')
        errorText.set('Gen updated')
        # Error/Message labels
-       lbl1 = Label(mainwindow, textvariable=error)
+       lbl1 = Label(LHButtons, textvariable=error)
        lbl1.grid(column=0, row=10)
-       lbl2 = Label(mainwindow, textvariable=errorText)
+       lbl2 = Label(LHButtons, textvariable=errorText)
        lbl2.grid(column=2, row=10)
        
     if mainwindow.focus_get() == freqGen1:
@@ -218,130 +224,119 @@ def keypadback():
     mainwindow.focus_get().delete(index) 
 
 #Widgets 
-# First row labels
-lbl = Label(mainwindow, text="Generator 1")
-lbl.grid(column=2, row=0)
-lbl = Label(mainwindow, text="Generator 2")
-lbl.grid(column=4, row=0)
-lbl = Label(mainwindow, text="Generator 3")
-lbl.grid(column=6, row=0)
+# frame for data entry except Keypad
+LHButtons = Frame(mainwindow,  borderwidth = 3, height = 450)
+LHButtons.grid(column=0, row=0)
 
-# Second row 
-# Frequency indicators
-lbl = Label(mainwindow, text="Frequency")
+# labels Generator 1
+lbl = Label(LHButtons, text="Generator 1")
+lbl.grid(column=2, row=0)
+
+lbl = Label(LHButtons, text="Frequency")
 lbl.grid(column=0, row=1)
 
 freqGen1text= StringVar()
-freqGen1 = Entry(mainwindow,width=10,  textvariable=freqGen1text)
+freqGen1 = Entry(LHButtons,width=10,  textvariable=freqGen1text)
 freqGen1.grid(column=2, row=1)
 
-lbl = Label(mainwindow, text="KHz")
+lbl = Label(LHButtons, text="KHz")
 lbl.grid(column=3, row=1)
 
-freqGen2 = Entry(mainwindow,width=10)
-freqGen2.grid(column=4, row=1)
+lbl = Label(LHButtons, text="Level")
+lbl.grid(column=0, row=2)
 
-lbl = Label(mainwindow, text="KHz")
-lbl.grid(column=5, row=1)
+lbl = Label(LHButtons, text="MUTED")
+lbl.grid(column=2, row=2)
 
-freqGen3 = Entry(mainwindow,width=10)
-freqGen3.grid(column=6, row=1)
+lbl = Label(LHButtons, text="dBm")
 
-lbl = Label(mainwindow, text="KHz")
-lbl.grid(column=7, row=1)
+mute1 = Button(LHButtons, text="Power/Mute", command=clickedMute1)
+mute1.grid(column=2, row=3)
+lbl.grid(column=3, row=2)
 
-# Third Row space 
+# Generator 2 
+lbl = Label(LHButtons, text="Generator 2")
+lbl.grid(column=2, row=6)
 
-#Fourth Row - levels 
-lbl = Label(mainwindow, text="Level")
-lbl.grid(column=0, row=3)
+freqGen2 = Entry(LHButtons,width=10)
+freqGen2.grid(column=2, row=7)
 
-lbl = Label(mainwindow, text="MUTED")
-lbl.grid(column=2, row=3)
+lbl = Label(LHButtons, text="KHz")
+lbl.grid(column=3, row=7)
 
-lbl = Label(mainwindow, text="dBm")
-lbl.grid(column=3, row=3)
+lbl = Label(LHButtons, text="MUTED")
+lbl.grid(column=2, row=8)
 
-lbl = Label(mainwindow, text="MUTED")
-lbl.grid(column=4, row=3)
+lbl = Label(LHButtons, text="dBm")
+lbl.grid(column=3, row=8)
 
-lbl = Label(mainwindow, text="dBm")
-lbl.grid(column=5, row=3)
+mute2 = Button(LHButtons, text="Power/Mute", command=clickedMute2)
+mute2.grid(column=2, row=9)
 
-lbl = Label(mainwindow, text="MUTED")
-lbl.grid(column=6, row=3)
+# Generator 3 
+lbl = Label(LHButtons, text="Generator 3")
+lbl.grid(column=2, row=11)
 
-lbl = Label(mainwindow, text="dBm")
-lbl.grid(column=7, row=3) 
+freqGen3 = Entry(LHButtons,width=10)
+freqGen3.grid(column=2, row=12)
 
-# Fifth row space
+lbl = Label(LHButtons, text="KHz")
+lbl.grid(column=3, row=12)
 
-# Sixth Row Mute 
-lbl = Label(mainwindow, text="")
-lbl.grid(column=0, row=6)
+lbl = Label(LHButtons, text="MUTED")
+lbl.grid(column=2, row=13)
 
-mute1 = Button(mainwindow, text="Power/Mute", command=clickedMute1)
-mute1.grid(column=2, row=6)
+lbl = Label(LHButtons, text="dBm")
+lbl.grid(column=3, row=13) 
 
-lbl = Label(mainwindow, text="")
-lbl.grid(column=3, row=5)
+mute3 = Button(LHButtons, text="Power/Mute", command=clickedMute3)
+mute3.grid(column=2, row=14)
 
-mute2 = Button(mainwindow, text="Power/Mute", command=clickedMute2)
-mute2.grid(column=4, row=6)
-
-lbl = Label(mainwindow, text="")
-lbl.grid(column=5,  row=5)
-
-mute3 = Button(mainwindow, text="Power/Mute", command=clickedMute3)
-mute3.grid(column=6, row=6)
-
-lbl = Label(mainwindow, text="")
-lbl.grid(column=7, row=5)
 
 # Keys to enter data 
 # Inside a frame called keypad
-keypad = Frame(mainwindow,  bg  = "yellow",  borderwidth = 3)
-keypad.grid(column = 12,  row = 2)
+keypad = Frame(mainwindow,  borderwidth = 10)
+keypad.grid(column = 1,  row = 0)
 
-btn = Button(keypad, text=" 1 ",   command=keypad1)
+btn = Button(keypad, text=" 1 ",   command=keypad1, height =4, width =6 )
 btn.grid(column=0, row=0)
 
-btn = Button(keypad, text=" 2 ",   command=keypad2)
+btn = Button(keypad, text=" 2 ",   command=keypad2, height =4, width =6 )
 btn.grid(column=1, row=0)
 
-btn = Button(keypad, text=" 3 ",   command=keypad3)
+btn = Button(keypad, text=" 3 ",   command=keypad3, height =4, width =6 )
 btn.grid(column=2, row=0)
 
-btn = Button(keypad, text=" 4 ",   command=keypad4)
+btn = Button(keypad, text=" 4 ",   command=keypad4, height =4, width =6 )
 btn.grid(column=0, row=1)
 
-btn = Button(keypad, text=" 5 ",   command=keypad5)
+btn = Button(keypad, text=" 5 ",   command=keypad5, height =4, width =6 )
 btn.grid(column=1, row=1)
 
-btn = Button(keypad, text=" 6 ",   command=keypad6)
+btn = Button(keypad, text=" 6 ",   command=keypad6, height =4, width =6 )
 btn.grid(column=2, row=1)
 
-btn = Button(keypad, text=" 7 ",   command=keypad7)
+btn = Button(keypad, text=" 7 ",   command=keypad7, height =4, width =6 )
 btn.grid(column=0, row=2)
 
-btn = Button(keypad, text=" 8 ",   command=keypad8)
+btn = Button(keypad, text=" 8 ",   command=keypad8, height =4, width =6 )
 btn.grid(column=1, row=2)
 
-btn = Button(keypad, text=" 9 ",   command=keypad9)
+btn = Button(keypad, text=" 9 ",   command=keypad9, height =4, width =6 )
 btn.grid(column=2, row=2)
 
-btn = Button(keypad, text=" C ",   command=keypadclear)
+btn = Button(keypad, text=" C ",   command=keypadclear, height =4, width =6)
 btn.grid(column=0, row=3)
 
-btn = Button(keypad, text=" 0 ",   command=keypad0)
+btn = Button(keypad, text=" 0 ",   command=keypad0, height =4, width =6 )
 btn.grid(column=1, row=3)
 
-btn = Button(keypad, text=" < ",   command=keypadback)
+btn = Button(keypad, text=" < ",   command=keypadback, height =4, width =6 )
 btn.grid(column=2, row=3)
 
 # Update generator which has current focus 
 btn = Button(mainwindow, text="Update Generator", command=clickedUpdate)
-btn.grid(column=12, row=6)
+btn.grid(column=0, row=1)
 
 
 
