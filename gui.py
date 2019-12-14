@@ -3,7 +3,7 @@
 # Frequency and amplitude data can be entered via
 # a touchscreen interface 
 
-from Tkinter import * 
+from tkinter import * 
 
 # Definitions and code for ADF4531  
 

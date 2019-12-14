@@ -3,7 +3,7 @@
 # main file
 # Interface code
 
-#from Tkinter import * 
+#from tkinter import * 
 import gui
 
 

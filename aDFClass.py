@@ -1,5 +1,5 @@
-#import RPi.GPIO as io # using RPi.GPIO
-#io.setmode(io.BCM)  # Broadcom pin assignment     
+import RPi.GPIO as io # using RPi.GPIO
+io.setmode(io.BCM)  # Broadcom pin assignment     
 
 class ADFReg:
     """ Creates a 32 bit number to write to ADF4531 Register containing various parameters
@@ -48,9 +48,11 @@ class ADF4531:
     """ Class containing variables and functions to drive the ADF4531 Fractional N PLL synthesizer chip 
         
     """ 
-    
+
+       
        # Create instance with instance variables and default values  
     def __init__(self, PLL_name): 
+            
         self.output_freq = 0 		# main output frquency KHz 
         self.reference_clock = 25000 	# Reference clock  in KHz 25 MHz in these modules 
         self.integer = 0    		# integer part of PLL main divider 16 bits
