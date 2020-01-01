@@ -74,12 +74,12 @@ class ADF4531:
         
         # Port pin assignments 
  
-        self.chipEnable = 0 
-        self.loadEnable = 0 
-        self.dataClock = 0 
-        self.serialData = 0 
-        self.lockDetect = 0 
-        self.multiplexData = 0 
+        self.chipEnable = 400 
+        self.loadEnable = 401 
+        self.dataClock = 402 
+        self.serialData = 403 
+        self.lockDetect = 404 
+        self.multiplexData = 405 
         
       
         # ADF4531 Registers with maps of variables  
@@ -157,12 +157,14 @@ class ADF4531:
         self.R5.add_data(R5data)
         
     def setup_port(self):
+
         io.setup(self.chipEnable,io.OUT) # make pin into an output   
         io.setup(self.loadEnable,io.OUT) 
         io.setup(self.dataClock,io.OUT) 
         io.setup(self.serialData,io.OUT)      
         
     def write_to_register(self, ADFReg): 
+ 
         io.output(self.chipEnable,0)    
         io.output(self.loadEnable,0) 
         io.output(self.dataClock,0) 
@@ -201,6 +203,7 @@ class ADF4531:
        
      # Update relevant registers after change      
     def update(self): 
+
         self.R4 = ADFReg('R4_update') 
         R4data = [['reserved',8,'00000000'],  ['feedbackType',1, self.feedbackType], ['rf_divider',3, self.rf_divider], ['band_select_clk_divider', 8,'00001000'], ['VCO_power_down',  1,  '0'],  
         ['MTLD',  1,  '0'],  ['aux_output_select',  1,  '0'],  ['aux_output_enable',  1,  self.auxRFEnabled],  ['aux_output_power',  2,  self.auxPower],  ['output_enable',  1,  self.mainRFEnabled],  
@@ -222,8 +225,18 @@ class ADF4531:
         self.write_to_register(self.R0)
         self.write_to_register(self.R0)        
         #print ("R0 equals ", self.R0.register)
+
+    def updatePower(self): 
+
+        self.R4 = ADFReg('R4_update') 
+        R4data = [['reserved',8,'00000000'],  ['feedbackType',1, self.feedbackType], ['rf_divider',3, self.rf_divider], ['band_select_clk_divider', 8,'00001000'], ['VCO_power_down',  1,  '0'],  
+        ['MTLD',  1,  '0'],  ['aux_output_select',  1,  '0'],  ['aux_output_enable',  1,  self.auxRFEnabled],  ['aux_output_power',  2,  self.auxPower],  ['output_enable',  1,  self.mainRFEnabled],  
+        ['output_power',  2,  self.mainPower],   
+        ['address', 3,'100']]
+        self.R4.add_data(R4data) 
+        self.write_to_register(self.R4)
+        #print ("R4 equals ", self.R4.register)
         
-    
     def calculate_freq(self, freq):
         self.output_frequency = freq  	# Frequency in KHz between 32 and 4400 MHz
         output_divider = 0		# output division
@@ -250,7 +263,7 @@ class ADF4531:
         elif freq >= 68750: 
             self.rf_divider = '101'      # divide output by 32
             output_divider = 32 
-        elif 34275 < freq & freq <= 68750:  # freq lies between 34.375MHz to 68.75MHz 
+        elif 34375 < freq & freq <= 68750:  # freq lies between 34.375MHz to 68.75MHz 
             self.rf_divider = '110'
             output_divider = 64
         else:

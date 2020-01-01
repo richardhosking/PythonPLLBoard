@@ -3,7 +3,7 @@
 # Frequency and amplitude data can be entered via
 # a touchscreen interface 
 
-from tkinter import * 
+from Tkinter import * 
 
 # Definitions and code for ADF4531  
 
@@ -12,55 +12,59 @@ import aDFClass
 # Main window 
 mainwindow = Tk()
 mainwindow.title("RF Signal Generator")
-mainwindow.geometry('650x300')
+# Fit mainwindow to screen
+w, h = mainwindow.winfo_screenwidth(), mainwindow.winfo_screenheight()
+mainwindow.geometry("%dx%d+0+0" % (w, h))
 
 #Frames
 # Frequency control frame to enclose freq widgets
 freq = Frame(mainwindow,  borderwidth = 10)
-freq.grid(column = 0,   row = 0,  sticky=N)
+freq.grid(column = 0,   row = 0,  sticky=(N,S))
+ 
 # Frame to enclose level widgets
 levels = Frame(mainwindow, borderwidth = 10)
-levels.grid(column = 1,  row = 0,  sticky=N)
+levels.grid(column = 1,  row = 0,  sticky=(N,S))
+
 # Keys to enter data 
 # Inside a frame called keypad
-keypad = Frame(mainwindow,  borderwidth = 10)
-keypad.grid(column = 2,  row = 0,  sticky=(N, S))
+keypad = Frame(mainwindow,  borderwidth = 10, height=h-10, width=w-200)
+keypad.grid(column = 2,  row = 0, sticky=N)
 
 # Create instances of the ADF4531 and assign ports 
 Gen1 = aDFClass.ADF4531("Gen1")
 
 # Set ports acording to wiring of RPi
 # Broadcom wiring convention
-Gen1.chipEnable = 17 # Physical pin 11
-Gen1.loadEnable = 18  # Physical pin 12 
-Gen1.dataClock = 27  # Physical pin 13
-Gen1.serialData = 22 # Physical pin 15
-Gen1.lockDetect = 0 
-Gen1.multiplexData = 0  
+Gen1.chipEnable = 2 # Physical pin 3
+Gen1.loadEnable = 3  # Physical pin 5 
+Gen1.dataClock = 4  # Physical pin 7
+Gen1.serialData = 14 # Physical pin 8
+Gen1.lockDetect = 100 # Not currently connected 
+Gen1.multiplexData = 101  
 Gen1.setup_port()
 Gen1.initialize_registers()
 
 Gen2 = aDFClass.ADF4531("Gen2")
 
-Gen2.chipEnable = 0 
-Gen2.loadEnable = 0 
-Gen2.dataClock = 0 
-Gen2.serialData = 0 
-Gen2.lockDetect = 0 
-Gen2.multiplexData = 0  
+Gen2.chipEnable = 17  # Physical pin 11
+Gen2.loadEnable = 27  # Physical pin 13
+Gen2.dataClock = 22   # Physical pin 15 
+Gen2.serialData = 18  # Physical pin 12
+Gen2.lockDetect = 200 
+Gen2.multiplexData = 201  
 Gen2.setup_port()
-
+Gen2.initialize_registers()
 
 Gen3 = aDFClass.ADF4531("Gen3")
 
-Gen3.chipEnable = 0 
-Gen3.loadEnable = 0 
-Gen3.dataClock = 0 
-Gen3.serialData = 0 
-Gen3.lockDetect = 0 
-Gen3.multiplexData = 0  
+Gen3.chipEnable = 10  # Physical pin 19 
+Gen3.loadEnable = 9   # Physical pin 21 
+Gen3.dataClock = 11   # Physical pin 23 
+Gen3.serialData = 25  # Physical pin 22 
+Gen3.lockDetect = 300 
+Gen3.multiplexData = 301  
 Gen3.setup_port()
-
+Gen3.initialize_registers()
 
 # Handlers - need to be declared before widget is defined
 def clickedMute1():
@@ -71,23 +75,23 @@ def clickedMute1():
         Gen1.mainRFEnabled = '0'
         Gen1.mainPower ='00'
         Gen1message ='MUTED'  # signal at approx -80dBm
-    elif  Gen1.mainRFEnabled == '0':
+    elif Gen1.mainRFEnabled == '0':
         Gen1.mainRFEnabled ='1'
         Gen1.mainPower ='00'
         Gen1message = '-9dBm '
-    elif  Gen1.mainPower =='00':
+    elif Gen1.mainPower =='00':
         Gen1.mainPower ='01'
         Gen1message = '-6dBm '
-    elif  Gen1.mainPower == '01':
+    elif Gen1.mainPower == '01':
         Gen1.mainPower ='10'
         Gen1message = '-3dBm '
-    elif  Gen1.mainPower =='10':
+    elif Gen1.mainPower =='10':
         Gen1.mainPower ='11'
         Gen1message = '0dBm '
         
     levlbl1 = Label(levels, text=Gen1message)
     levlbl1.grid(column=1, row=2,  padx=5)
-    Gen1.update()
+    Gen1.updatePower()
 
 def clickedMute2():
     Gen2message =  StringVar()
@@ -96,21 +100,21 @@ def clickedMute2():
         Gen2.mainRFEnabled = '0'
         Gen2.mainPower ='00'
         Gen2message ='MUTED'  # signal at approx -80dBm
-    elif  Gen2.mainRFEnabled == '0':
+    elif Gen2.mainRFEnabled == '0':
         Gen2.mainRFEnabled ='1'
         Gen2.mainPower ='00'
         Gen2message = '-9dBm '
-    elif  Gen2.mainPower =='00':
+    elif Gen2.mainPower =='00':
         Gen2.mainPower ='01'
         Gen2message = '-6dBm '
-    elif  Gen2.mainPower =='01':
+    elif Gen2.mainPower =='01':
         Gen2.mainPower ='10'
         Gen2message = '-3dBm '
-    elif  Gen2.mainPower =='10':
+    elif Gen2.mainPower =='10':
         Gen2.mainPower ='11'
         Gen2message = ' 0dBm '
 
-    Gen2.update()
+    Gen2.updatePower()
     levlbl2 = Label(levels, text=Gen2message)
     levlbl2.grid(column=1, row=5,  padx=5)
 
@@ -122,21 +126,21 @@ def clickedMute3():
         Gen3.mainRFEnabled = '0'
         Gen3.mainPower ='00'
         Gen3message ='MUTED'
-    elif  Gen3.mainRFEnabled == '0':
+    elif Gen3.mainRFEnabled == '0':
         Gen3.mainRFEnabled ='1'
         Gen3.mainPower ='00'
         Gen3message = '-9dBm '
-    elif  Gen3.mainPower =='00':
+    elif Gen3.mainPower =='00':
         Gen3.mainPower ='01'
         Gen3message = '-6dBm '
-    elif  Gen3.mainPower =='01': 
+    elif Gen3.mainPower =='01': 
         Gen3.mainPower ='10'
         Gen3message = '-3dBm '
-    elif  Gen3.mainPower =='10':
+    elif Gen3.mainPower =='10':
         Gen3.mainPower ='11'
         Gen3message = '0dBm '
 
-    Gen3.update()
+    Gen3.updatePower()
     levlbl3 = Label(levels, text=Gen3message)
     levlbl3.grid(column=1, row=8,  padx=5)
 
@@ -158,7 +162,7 @@ def clickedUpdate():
            # and clear data
            mainwindow.focus_get().delete(0, END)
     
-        elif freqEntered < 34275:  # Min freq of module 34.275 MHz 
+        elif freqEntered < 34375:  # Min freq of module 34.275 MHz 
            error.set('Error!')
            errorText.set('  Freq < min  ')
           # Error/Message labels       
@@ -171,13 +175,13 @@ def clickedUpdate():
            # Error/Message labels
            
            if mainwindow.focus_get() == freqGen1:
-              pass#Gen1.calculate_freq(freqEntered)
+              Gen1.calculate_freq(freqEntered)
               Gen1.update()
            elif mainwindow.focus_get() == freqGen2:
-              pass#Gen2.calculate_freq(freqEntered)
+              Gen2.calculate_freq(freqEntered)
               Gen2.update()
            elif mainwindow.focus_get() == freqGen3:
-              pass#Gen3.calculate_freq(freqEntered)
+              Gen3.calculate_freq(freqEntered)
               Gen3.update()
        
     else:
@@ -301,45 +305,45 @@ levlbl3.grid(column=1, row=2,  padx=5)
 
 #KEYPAD
 # Keypad widgets
-btn = Button(keypad, text=" 1 ",   command=keypad1)
+btn = Button(keypad, text=" 1 ",   command=keypad1, height = 3, width = 3)
 btn.grid(column=0, row=0)
 
-btn = Button(keypad, text=" 2 ",   command=keypad2)
+btn = Button(keypad, text=" 2 ",   command=keypad2, height = 3, width = 3)
 btn.grid(column=1, row=0)
 
-btn = Button(keypad, text=" 3 ",   command=keypad3)
+btn = Button(keypad, text=" 3 ",   command=keypad3, height = 3, width = 3)
 btn.grid(column=2, row=0)
 
-btn = Button(keypad, text=" 4 ",   command=keypad4)
+btn = Button(keypad, text=" 4 ",   command=keypad4, height = 3, width = 3)
 btn.grid(column=0, row=1)
 
-btn = Button(keypad, text=" 5 ",   command=keypad5)
+btn = Button(keypad, text=" 5 ",   command=keypad5, height = 3, width = 3)
 btn.grid(column=1, row=1)
 
-btn = Button(keypad, text=" 6 ",   command=keypad6)
+btn = Button(keypad, text=" 6 ",   command=keypad6, height = 3, width = 3)
 btn.grid(column=2, row=1)
 
-btn = Button(keypad, text=" 7 ",   command=keypad7)
+btn = Button(keypad, text=" 7 ",   command=keypad7, height = 3, width = 3)
 btn.grid(column=0, row=2)
 
-btn = Button(keypad, text=" 8 ",   command=keypad8)
+btn = Button(keypad, text=" 8 ",   command=keypad8, height = 3, width = 3)
 btn.grid(column=1, row=2)
 
-btn = Button(keypad, text=" 9 ",   command=keypad9)
+btn = Button(keypad, text=" 9 ",   command=keypad9, height = 3, width = 3)
 btn.grid(column=2, row=2)
 
-btn = Button(keypad, text=" C ",   command=keypadclear)
+btn = Button(keypad, text=" C ",   command=keypadclear, height = 3, width = 3)
 btn.grid(column=0, row=3)
 
-btn = Button(keypad, text=" 0 ",   command=keypad0)
+btn = Button(keypad, text=" 0 ",   command=keypad0, height = 3, width = 3)
 btn.grid(column=1, row=3)
 
-btn = Button(keypad, text=" < ",   command=keypadback)
+btn = Button(keypad, text=" < ",   command=keypadback, height = 3, width = 3)
 btn.grid(column=2, row=3)
 
 # Update generator which has current focus 
-btn = Button(keypad, text="Update Generator", command=clickedUpdate)
-btn.grid(column=0, row=4,  columnspan=3)
+btn = Button(keypad, text="Update Generator", command=clickedUpdate, height = 3)
+btn.grid(column=0, row=4, columnspan = 3)
 
 
 
