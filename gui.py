@@ -12,7 +12,7 @@ import aDFClass
 # Main window 
 mainwindow = Tk()
 mainwindow.title("RF Signal Generator")
-# Fit mainwindow to screen
+#mainwindow.geometry('650x300')
 w, h = mainwindow.winfo_screenwidth(), mainwindow.winfo_screenheight()
 mainwindow.geometry("%dx%d+0+0" % (w, h))
 
@@ -20,15 +20,18 @@ mainwindow.geometry("%dx%d+0+0" % (w, h))
 # Frequency control frame to enclose freq widgets
 freq = Frame(mainwindow,  borderwidth = 10)
 freq.grid(column = 0,   row = 0,  sticky=(N,S))
- 
+#freq.pack()
 # Frame to enclose level widgets
 levels = Frame(mainwindow, borderwidth = 10)
 levels.grid(column = 1,  row = 0,  sticky=(N,S))
+#levels.pack()
 
 # Keys to enter data 
 # Inside a frame called keypad
 keypad = Frame(mainwindow,  borderwidth = 10, height=h-10, width=w-200)
 keypad.grid(column = 2,  row = 0, sticky=N)
+#keypad.pack(expand=YES, fill=BOTH)
+#keypad.geometry('650x300')
 
 # Create instances of the ADF4531 and assign ports 
 Gen1 = aDFClass.ADF4531("Gen1")
@@ -39,7 +42,7 @@ Gen1.chipEnable = 2 # Physical pin 3
 Gen1.loadEnable = 3  # Physical pin 5 
 Gen1.dataClock = 4  # Physical pin 7
 Gen1.serialData = 14 # Physical pin 8
-Gen1.lockDetect = 100 # Not currently connected 
+Gen1.lockDetect = 100 
 Gen1.multiplexData = 101  
 Gen1.setup_port()
 Gen1.initialize_registers()
